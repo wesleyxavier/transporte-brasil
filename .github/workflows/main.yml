@@ -1,0 +1,44 @@
+name: Deploy Heroku transporte-brasil
+
+on:
+  push:
+    branches:
+    - master
+    - release/*
+
+jobs:
+  build_icolors:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.NETCORE_VERSION }}
+    - name: Restore packages
+      run: dotnet restore    
+    - name: Test app
+      run: dotnet test
+    - name: Build app
+      run: dotnet build --configuration Release --no-restore
+    - name: Build and deploy the Docker image
+      env:
+        APP_NAME: ${{ 'transporte-brasil' }}
+      run: docker build . -f Transporte.Api/Dockerfile -t $APP_NAME
+    - name: Login to Heroku Container registry
+      env: 
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:login 
+    - name: Tag add
+      env:
+        APP_NAME: ${{ 'transporte-brasil' }}
+      run: docker tag $APP_NAME registry.heroku.com/$APP_NAME/web
+    - name: Push
+      env:
+        APP_NAME: ${{ 'transporte-brasil' }}
+      run: docker push registry.heroku.com/$APP_NAME/web
+    - name: Release
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        APP_NAME: ${{ 'transporte-brasil' }}
+      run: heroku container:release web -a $APP_NAME
