@@ -2,10 +2,10 @@
 version: '3.4'
 
 services:
-  transporte:
-    image: transporte
+  srcapp:
+    image: srcapp
     build:
       context: .
-      dockerfile: Transporte.Api/Dockerfile
+      dockerfile: src.app.webapi/Dockerfile
     ports:
       - 5000

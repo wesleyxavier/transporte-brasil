@@ -24,7 +24,7 @@ jobs:
     - name: Build and deploy the Docker image
       env:
         APP_NAME: ${{ 'transporte-brasil' }}
-      run: docker build . -f Transporte.Api/Dockerfile -t $APP_NAME
+      run: docker build . -f src.*/Dockerfile -t $APP_NAME
     - name: Login to Heroku Container registry
       env: 
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
