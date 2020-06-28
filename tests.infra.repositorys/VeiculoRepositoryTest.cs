@@ -57,21 +57,27 @@ namespace tests.infra.repositorys {
         public void MemoryAddTest () {
             repository = new VeiculoRepository (db);
 
-            Veiculo entity = new Veiculo () { Nome = "Wesley", Id = 1 };
+            Veiculo entity = new Veiculo () { Nome = "Wesley" };
             result = repository.Add (entity).Result;
 
             Assert.IsNotNull (result, "Repository Veiculo está nullo");
             Assert.AreEqual (1, result.Id, "Repository Veiculo está nullo");
 
-            result = repository.FindAll ().Result.FirstOrDefault();
+            result = repository.FindAll ().Result.FirstOrDefault ();
             Assert.IsNotNull (result, "Repository Veiculo está nullo");
             Assert.AreEqual (1, result.Id, "Repository Veiculo está nullo");
         }
 
         [TestMethod]
         public void MemoryFindTest () {
+
+            #region Add
             repository = new VeiculoRepository (db);
-            MemoryAddTest ();
+
+            Veiculo entity = new Veiculo () { Nome = "Wesley" };
+            result = repository.Add (entity).Result;
+
+            #endregion
 
             result = repository.Find (1).Result;
 
@@ -81,25 +87,36 @@ namespace tests.infra.repositorys {
 
         [TestMethod]
         public void MemoryUpdateTest () {
+            #region Add
             repository = new VeiculoRepository (db);
-            MemoryFindTest ();
+
+            Veiculo entity = new Veiculo () { Nome = "Wesley" };
+            result = repository.Add (entity).Result;
+            var id = result.Id;
+            #endregion
 
             result.Nome = "Marcelo";
             result = repository.Update (result).Result;
 
             Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (1, result.Id, "Repository Veiculo está nullo");
+            Assert.AreEqual (id, result.Id, "Repository Veiculo está nullo");
             Assert.AreEqual ("Marcelo", result.Nome, "Repository Veiculo está nullo");
         }
 
         [TestMethod]
         public void MemoryRemoveTest () {
             repository = new VeiculoRepository (db);
-            MemoryUpdateTest ();
+            #region Add
+            repository = new VeiculoRepository (db);
+
+            Veiculo entity = new Veiculo () { Nome = "Wesley" };
+            result = repository.Add (entity).Result;
+            var id = result.Id;
+            #endregion
 
             result = repository.Delete (result).Result;
 
-            result = repository.Find (1).Result;
+            result = repository.Find (id).Result;
             Assert.IsNull (result, "Repository Veiculo está nullo");
         }
     }

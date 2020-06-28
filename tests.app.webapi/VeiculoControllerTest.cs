@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -76,35 +77,55 @@ namespace tests.app.webapi {
 
         [TestMethod]
         public async Task FindTest () {
-            await AddTest ();
+            #region  add
+            var veiculo = new Veiculo () {
+                Nome = "Porsche"
+            };
+
+            var jsonContent = JsonSerializer.Serialize (veiculo);
+            var contentString = new StringContent (jsonContent, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue ("application/json");
+
+            await clienteHttp.PostAsync ("/api/Veiculo/Add", contentString);
+            #endregion
 
             var response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
 
             Assert.AreNotEqual (HttpStatusCode.NoContent, response.StatusCode);
-            Assert.AreEqual (HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual (HttpStatusCode.OK, response.StatusCode, "Status Não está Ok");
 
             var responseString = await response.Content.ReadAsStringAsync ();
 
             Assert.IsNotNull (responseString);
 
-            var veiculo = JsonSerializer.Deserialize<Veiculo> (responseString);
+            veiculo = JsonSerializer.Deserialize<Veiculo> (responseString);
 
-            Assert.AreEqual (1, veiculo.Id);
+            Assert.AreEqual (1, veiculo.Id, "Valor Id diferente atual");
         }
 
         [TestMethod]
         public async Task UpdateTest () {
-            await AddTest ();
+            #region  add
+            var veiculo = new Veiculo () {
+                Nome = "Porsche"
+            };
+
+            var jsonContent = JsonSerializer.Serialize (veiculo);
+            var contentString = new StringContent (jsonContent, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue ("application/json");
+
+            await clienteHttp.PostAsync ("/api/Veiculo/Add", contentString);
+            #endregion
 
             var response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
             var responseString = await response.Content.ReadAsStringAsync ();
-            var veiculo = JsonSerializer.Deserialize<Veiculo> (responseString);
+            veiculo = JsonSerializer.Deserialize<Veiculo> (responseString);
 
             // ALTERANDO NOME DO CARRO
             veiculo.Nome = "Ferrari";
 
-            var jsonContent = JsonSerializer.Serialize (veiculo);
-            var contentString = new StringContent (jsonContent, Encoding.UTF8, "application/json");
+            jsonContent = JsonSerializer.Serialize (veiculo);
+            contentString = new StringContent (jsonContent, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue ("application/json");
 
             response = await clienteHttp.PutAsync ("/api/Veiculo/Update", contentString);
@@ -127,14 +148,26 @@ namespace tests.app.webapi {
 
         [TestMethod]
         public async Task RemoveTest () {
-            await AddTest ();
+            #region  add
+            var veiculo = new Veiculo () {
+                Nome = "Porsche"
+            };
+
+            var jsonContent = JsonSerializer.Serialize (veiculo);
+            var contentString = new StringContent (jsonContent, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue ("application/json");
+
+            await clienteHttp.PostAsync ("/api/Veiculo/Add", contentString);
+            #endregion
 
             var response = await clienteHttp.DeleteAsync ($"/api/Veiculo/Delete/?id={1}");
 
             Assert.AreNotEqual (HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual (HttpStatusCode.NoContent, response.StatusCode);
 
-            await FindAllArrayVazioTest ();
+            response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
+
+            Assert.AreEqual (HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }
