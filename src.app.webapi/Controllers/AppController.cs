@@ -19,9 +19,9 @@ namespace src.app.webapi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<int> Get()
+        public string Get()
         {
-            return Enumerable.Range(1, 5);
+            return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
     }
 }

@@ -3,7 +3,7 @@ version: '3.4'
 
 services:
   srcapp:
-    image: srcapp
+    image: transporte
     build:
       context: .
       dockerfile: src.app.webapi/Dockerfile
