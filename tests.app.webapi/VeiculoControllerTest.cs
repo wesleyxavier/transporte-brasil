@@ -31,16 +31,15 @@ namespace tests.app.webapi {
         [TestMethod]
         public async Task FindAllArrayVazioTest () {
             var response = await clienteHttp.GetAsync ("/api/Veiculo/Get");
+
+            Assert.IsNotNull (response, "Response está nulo");
+
             response.EnsureSuccessStatusCode ();
             var responseString = await response.Content.ReadAsStringAsync ();
 
-            Assert.IsNotNull (responseString);
-
             var lista = JsonSerializer.Deserialize<List<Veiculo>> (responseString);
 
-            Assert.IsNotNull (lista);
-
-            Assert.AreEqual (0, lista.Count ());
+            Assert.AreEqual (0, lista.Count (), "Lista de Veiculo está com a quantidade invalida");
         }
 
         [TestMethod]
@@ -56,23 +55,31 @@ namespace tests.app.webapi {
 
             var response = await clienteHttp.PostAsync ("/api/Veiculo/Add", contentString);
 
-            Assert.AreNotEqual (HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual (HttpStatusCode.OK, response.StatusCode);
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            Assert.AreNotEqual (HttpStatusCode.BadRequest, response.StatusCode, "Response Bad Request");
+            Assert.AreEqual (HttpStatusCode.OK, response.StatusCode, "Response não está Ok");
+            #endregion
 
             var responseString = await response.Content.ReadAsStringAsync ();
-
-            Assert.IsNotNull (responseString);
-
             var veiculoResult = JsonSerializer.Deserialize<Veiculo> (responseString);
 
-            Assert.AreEqual (1, veiculoResult.Id);
+            #region Assert
+            Assert.AreEqual (1, veiculoResult.Id, "Response está com id inválido");
+            #endregion
 
             response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
+
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            #endregion
+
             responseString = await response.Content.ReadAsStringAsync ();
             var veiculoResultado = JsonSerializer.Deserialize<Veiculo> (responseString);
 
-            // ALTERANDO NOME DO CARRO
-            Assert.AreEqual ("Porsche", veiculoResultado.Nome);
+            #region Assert
+            Assert.AreEqual ("Porsche", veiculoResultado.Nome, "Veiculo está com Nome Inválido");
+            #endregion
         }
 
         [TestMethod]
@@ -91,16 +98,18 @@ namespace tests.app.webapi {
 
             var response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
 
-            Assert.AreNotEqual (HttpStatusCode.NoContent, response.StatusCode);
-            Assert.AreEqual (HttpStatusCode.OK, response.StatusCode, "Status Não está Ok");
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            Assert.AreNotEqual (HttpStatusCode.NoContent, response.StatusCode, "Response está nulo");
+            Assert.AreEqual (HttpStatusCode.OK, response.StatusCode, "Response está nulo");
+            #endregion
 
             var responseString = await response.Content.ReadAsStringAsync ();
-
-            Assert.IsNotNull (responseString);
-
             veiculo = JsonSerializer.Deserialize<Veiculo> (responseString);
 
-            Assert.AreEqual (1, veiculo.Id, "Valor Id diferente atual");
+            #region Assert
+            Assert.AreEqual (1, veiculo.Id, "Response está nulo");
+            #endregion
         }
 
         [TestMethod]
@@ -118,6 +127,11 @@ namespace tests.app.webapi {
             #endregion
 
             var response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
+
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            #endregion
+
             var responseString = await response.Content.ReadAsStringAsync ();
             veiculo = JsonSerializer.Deserialize<Veiculo> (responseString);
 
@@ -129,21 +143,33 @@ namespace tests.app.webapi {
             contentString.Headers.ContentType = new MediaTypeHeaderValue ("application/json");
 
             response = await clienteHttp.PutAsync ("/api/Veiculo/Update", contentString);
+
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            #endregion
+
             response.EnsureSuccessStatusCode ();
             responseString = await response.Content.ReadAsStringAsync ();
 
-            Assert.IsNotNull (responseString);
-
             var veiculoResult = JsonSerializer.Deserialize<Veiculo> (responseString);
 
-            Assert.AreEqual (1, veiculoResult.Id);
-            Assert.AreEqual ("Ferrari", veiculoResult.Nome);
+            #region Assert
+            Assert.AreEqual (1, veiculoResult.Id, "Update: Veiculo está com id inválido");
+            Assert.AreEqual ("Ferrari", veiculoResult.Nome, "Update: Veiculo está com nome inválido");
+            #endregion
 
             response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
+
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            #endregion
+
             responseString = await response.Content.ReadAsStringAsync ();
             var veiculoResultFind = JsonSerializer.Deserialize<Veiculo> (responseString);
 
-            Assert.AreEqual ("Ferrari", veiculoResultFind.Nome);
+            #region Assert
+            Assert.AreEqual ("Ferrari", veiculoResultFind.Nome, "Find: Veiculo está com nome inválido");
+            #endregion
         }
 
         [TestMethod]
@@ -162,12 +188,18 @@ namespace tests.app.webapi {
 
             var response = await clienteHttp.DeleteAsync ($"/api/Veiculo/Delete/?id={1}");
 
-            Assert.AreNotEqual (HttpStatusCode.NotFound, response.StatusCode);
-            Assert.AreEqual (HttpStatusCode.NoContent, response.StatusCode);
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            Assert.AreNotEqual (HttpStatusCode.NotFound, response.StatusCode, "Response está NotFound");
+            Assert.AreEqual (HttpStatusCode.NoContent, response.StatusCode, "Response não está ok");
+            #endregion
 
             response = await clienteHttp.GetAsync ($"/api/Veiculo/Find/?id={1}");
 
-            Assert.AreEqual (HttpStatusCode.NoContent, response.StatusCode);
+            #region Assert
+            Assert.IsNotNull (response, "Response está nulo");
+            Assert.AreEqual (HttpStatusCode.NoContent, response.StatusCode, "Response com Status innválido");
+            #endregion
         }
     }
 }

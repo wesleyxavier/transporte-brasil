@@ -28,8 +28,10 @@ namespace tests.core.services {
             var service = new VeiculoService (mock.Object);
             var result = service.FindAll ().Result;
 
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (3, result.Count (), "Repository Veiculo está nullo");
+            #region Assert
+            Assert.IsNotNull (result, "Lista de Veiculo está nulo");
+            Assert.AreEqual (3, result.Count (), "Lista de Veiculo está com Quantidade inválida");
+            #endregion
         }
     }
 }

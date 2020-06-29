@@ -65,7 +65,9 @@ namespace src.app.webapi.Controllers {
 
         [HttpDelete]
         public async Task<IActionResult> Delete ([FromQuery (Name = "id")] int id) {
+            
             var item = await _service.Find (id);
+
             if (item == null) {
                 return NotFound ();
             }

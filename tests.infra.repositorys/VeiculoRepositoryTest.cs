@@ -26,7 +26,7 @@ namespace tests.infra.repositorys {
         }
 
         [TestMethod]
-        public void FindAllMockTest () {
+        public void FindAllMockRetornaListaItensTest () {
 
             mock = new Mock<IVeiculoRepository> ();
             var resultado = new List<Veiculo> () {
@@ -39,37 +39,47 @@ namespace tests.infra.repositorys {
 
             var result = repository.FindAll ().Result;
 
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (2, result.Count (), "Repository Veiculo está nullo");
+            #region Assert
+            Assert.IsNotNull (result, "Lista de Veiculo está nulo");
+            Assert.AreEqual (2, result.Count (), "Lista de Veiculo está com a quantidade invalida");
+            #endregion
         }
 
         [TestMethod]
-        public void MemoryArrayVazioTest () {
+        public void FindAllArrayVazioTest () {
             repository = new VeiculoRepository (db);
 
             var result = repository.FindAll ().Result;
 
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (0, result.Count (), "Repository Veiculo está nullo");
+            #region Assert
+            Assert.IsNotNull (result, "Lista de Veiculo está nulo");
+            Assert.AreEqual (0, result.Count (), "Lista de Veiculo está com a quantidade invalida");
+            #endregion
         }
 
         [TestMethod]
-        public void MemoryAddTest () {
+        public void AddTest () {
             repository = new VeiculoRepository (db);
 
             Veiculo entity = new Veiculo () { Nome = "Wesley" };
             result = repository.Add (entity).Result;
 
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (1, result.Id, "Repository Veiculo está nullo");
+            #region Assert
+            Assert.IsNotNull (result, "Add: Veiculo está nulo");
+            Assert.AreNotEqual (0, result.Id, "Add: Veiculo com id incorreto");
+            #endregion
 
-            result = repository.FindAll ().Result.FirstOrDefault ();
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (1, result.Id, "Repository Veiculo está nullo");
+            var id = result.Id;
+            var resultFind = repository.Find (id).Result;
+
+            #region Assert
+            Assert.IsNotNull (resultFind, "Find: Veiculo está nulo");
+            Assert.AreEqual (id, resultFind.Id, "Find:  Veiculo com id incorreto");
+            #endregion
         }
 
         [TestMethod]
-        public void MemoryFindTest () {
+        public void FindTest () {
 
             #region Add
             repository = new VeiculoRepository (db);
@@ -81,31 +91,35 @@ namespace tests.infra.repositorys {
 
             result = repository.Find (1).Result;
 
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (1, result.Id, "Repository Veiculo está nullo");
+            #region Assert
+            Assert.IsNotNull (result, "Veiculo está nulo");
+            Assert.AreEqual (1, result.Id, " Veiculo com id incorreto");
+            #endregion
         }
 
         [TestMethod]
-        public void MemoryUpdateTest () {
+        public void UpdateTest () {
             #region Add
             repository = new VeiculoRepository (db);
 
             Veiculo entity = new Veiculo () { Nome = "Wesley" };
             result = repository.Add (entity).Result;
-            var id = result.Id;
             #endregion
 
+            var id = result.Id;
             result.Nome = "Marcelo";
-            result = repository.Update (result).Result;
 
-            Assert.IsNotNull (result, "Repository Veiculo está nullo");
-            Assert.AreEqual (id, result.Id, "Repository Veiculo está nullo");
-            Assert.AreEqual ("Marcelo", result.Nome, "Repository Veiculo está nullo");
+            var resultUpdate = repository.Update (result).Result;
+
+            #region Assert
+            Assert.IsNotNull (resultUpdate, "Veiculo está nulo");
+            Assert.AreEqual (id, resultUpdate.Id, "Veiculo com id incorreto");
+            Assert.AreEqual ("Marcelo", resultUpdate.Nome, "Veiculo está com Nome incorreto");
+            #endregion
         }
 
         [TestMethod]
-        public void MemoryRemoveTest () {
-            repository = new VeiculoRepository (db);
+        public void RemoveTest () {
             #region Add
             repository = new VeiculoRepository (db);
 
@@ -115,9 +129,11 @@ namespace tests.infra.repositorys {
             #endregion
 
             result = repository.Delete (result).Result;
-
             result = repository.Find (id).Result;
-            Assert.IsNull (result, "Repository Veiculo está nullo");
+
+            #region Assert
+            Assert.IsNull (result, "Veiculo não está nulo");
+            #endregion
         }
     }
 }
